@@ -8,11 +8,10 @@ It provides a simple interface for running shell commands and getting their outp
 It also supports command filters for transforming commands before execution.
 """
 
-import subprocess
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Callable
+from typing import Any, Dict, List, Optional
 
-from  utils.common import (
+from utils.common import (
     DialogMessages,
     LLMTool,
     ToolImplOutput,

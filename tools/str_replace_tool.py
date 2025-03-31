@@ -32,6 +32,7 @@ Command = Literal[
     "undo_edit",
 ]
 
+
 def is_path_in_directory(directory: Path, path: Path) -> bool:
     directory = directory.resolve()
     path = path.resolve()
@@ -269,12 +270,12 @@ Notes for using the `str_replace` command:\n
             elif command == "undo_edit":
                 return self.undo_edit(_ws_path)
             raise ToolError(
-                f'Unrecognized command {command}. The allowed commands for the {self.name} tool are: {", ".join(get_args(Command))}'
+                f"Unrecognized command {command}. The allowed commands for the {self.name} tool are: {', '.join(get_args(Command))}"
             )
         except Exception as e:
             return ExtendedToolImplOutput(
-                e.message,
-                e.message,
+                e.message,  # pyright: ignore[reportAttributeAccessIssue]
+                e.message,  # pyright: ignore[reportAttributeAccessIssue]
                 {"success": False},
             )
 
@@ -376,6 +377,7 @@ Notes for using the `str_replace` command:\n
             new_str = new_str.expandtabs()
 
         new_str = match_indent(new_str, content)
+        assert new_str is not None, "new_str should not be None after match_indent"
 
         # Split into lines for processing
         content_lines = content.splitlines()
@@ -422,6 +424,7 @@ Notes for using the `str_replace` command:\n
         indented_new_str = match_indent_by_first_line(
             new_str, original_matched_lines[0]
         )
+        assert indented_new_str is not None, "indented_new_str should not be None"
 
         # Create new content by replacing the matched lines
         new_content = [

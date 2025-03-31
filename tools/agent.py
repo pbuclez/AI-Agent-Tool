@@ -1,5 +1,3 @@
-
-from pathlib import Path
 from copy import deepcopy
 from typing import Any, Optional
 from tools.bash_tool import create_bash_tool, create_docker_bash_tool
@@ -7,7 +5,6 @@ from utils.common import (
     DialogMessages,
     LLMTool,
     ToolImplOutput,
-    ToolCallParameters,
 )
 from utils.llm_client import LLMClient, TextResult
 from utils.workspace_manager import WorkspaceManager
@@ -18,7 +15,6 @@ from tools.sequential_thinking_tool import SequentialThinkingTool
 from termcolor import colored
 from rich.console import Console
 import logging
-
 
 
 class Agent(LLMTool):
@@ -79,7 +75,10 @@ try breaking down the task into smaller steps and call this tool multiple times.
         self.max_turns = max_turns
         self.workspace_manager = workspace_manager
         self.interrupted = False
-        self.dialog = DialogMessages(logger_for_agent_logs=logger_for_agent_logs,use_prompt_budgeting=use_prompt_budgeting)
+        self.dialog = DialogMessages(
+            logger_for_agent_logs=logger_for_agent_logs,
+            use_prompt_budgeting=use_prompt_budgeting,
+        )
 
         # Create and store the complete tool
         self.complete_tool = CompleteTool()
@@ -119,7 +118,7 @@ try breaking down the task into smaller steps and call this tool multiple times.
 
         user_input_delimiter = "-" * 45 + " USER INPUT " + "-" * 45 + "\n" + instruction
         self.logger_for_agent_logs.info(f"\n{user_input_delimiter}\n")
-        
+
         # print("Agent starting with instruction:", instruction)
 
         # Add instruction to dialog before getting mode
@@ -169,14 +168,15 @@ try breaking down the task into smaller steps and call this tool multiple times.
                         tool_result_message="Task completed",
                     )
 
-
                 if len(pending_tool_calls) > 1:
                     raise ValueError("Only one tool call per turn is supported")
 
                 assert len(pending_tool_calls) == 1
                 tool_call = pending_tool_calls[0]
 
-                text_results = [item for item in model_response if isinstance(item, TextResult)]
+                text_results = [
+                    item for item in model_response if isinstance(item, TextResult)
+                ]
                 if len(text_results) > 0:
                     text_result = text_results[0]
                     self.logger_for_agent_logs.info(
@@ -193,7 +193,9 @@ try breaking down the task into smaller steps and call this tool multiple times.
                 try:
                     result = tool.run(tool_call.tool_input, deepcopy(self.dialog))
 
-                    tool_input_str = '\n'.join([f' - {k}: {v}' for k, v in tool_call.tool_input.items()])
+                    tool_input_str = "\n".join(
+                        [f" - {k}: {v}" for k, v in tool_call.tool_input.items()]
+                    )
                     log_message = f"Calling tool {tool_call.tool_name} with input:\n{tool_input_str}"
                     log_message += f"\nTool output: \n{result}\n\n"
                     self.logger_for_agent_logs.info(log_message)
@@ -278,7 +280,6 @@ try breaking down the task into smaller steps and call this tool multiple times.
         else:
             self.dialog.clear()
             self.interrupted = False
-
 
         tool_input = {
             "instruction": instruction,

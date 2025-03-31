@@ -1,6 +1,4 @@
-
 import docker
-import json
 import logging
 import os
 import subprocess
@@ -58,6 +56,7 @@ def set_volume_permissions(container_id, volume_path: Path):
         logging.warning(f"Failed to chown {volume_path}: {e}")
         raise
 
+
 def start_container(workspace: Path, problem_id: str, semaphore: Any) -> str:
     """Start a docker container for the issue."""
     stop_container(f"sweb.augment.{problem_id}")
@@ -105,6 +104,7 @@ def start_container(workspace: Path, problem_id: str, semaphore: Any) -> str:
             retry = False
             time.sleep(10)
     return container_id
+
 
 def remove_container_image(image_name: str) -> None:
     """Remove a docker image."""

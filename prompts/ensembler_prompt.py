@@ -1,8 +1,7 @@
 """Majority Vote Ensembler Prompt"""
 
-def build_ensembler_prompt(
-    instruction: str, diffs: list[str]
-) -> str:
+
+def build_ensembler_prompt(instruction: str, diffs: list[str]) -> str:
     prompt = f"""\
 
 I am a software engineer. I am working on a task in my codebase. Here is the task:
@@ -19,9 +18,9 @@ with each solution, there is a <candidate_explanation> tag that provides a justi
     for i, diff in enumerate(diffs):
         prompt += f"""\
 
-<candidate_solution index={i+1}>
+<candidate_solution index={i + 1}>
 {diff}
-</candidate_solution index={i+1}>
+</candidate_solution index={i + 1}>
 """
 
     prompt += """\

@@ -11,6 +11,7 @@ from rich.console import Console
 
 from utils.docker_utils import stop_container
 
+
 def get_dataset_name(dataset: str) -> str:
     """Get the dataset name for the specified dataset."""
     return {
@@ -18,6 +19,7 @@ def get_dataset_name(dataset: str) -> str:
         "full": "princeton-nlp/SWE-bench",
         "lite": "princeton-nlp/SWE-bench_Lite",
     }[dataset]
+
 
 def run_evaluation(
     predictions_file: Path,
@@ -70,7 +72,9 @@ def run_evaluation(
                 capture_output=capture_output,
             )
         except huggingface_hub.errors.HfHubHTTPError as e:
-            logging.warning(f"Failed to run evaluation for {instance_id}: {e}. Retrying.")
+            logging.warning(
+                f"Failed to run evaluation for {instance_id}: {e}. Retrying."
+            )
             continue
         tries += 1
         want_retry = False

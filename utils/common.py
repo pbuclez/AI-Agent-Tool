@@ -9,12 +9,11 @@ from typing import Any, Optional, cast
 import subprocess
 
 import jsonschema
-import numpy as np
 from anthropic import BadRequestError
 from termcolor import colored
 from typing_extensions import final
 
-from token_counter import (
+from utils.token_counter import (
     ClaudeTokenCounter,
 )
 from utils.llm_client import (
@@ -72,7 +71,11 @@ class DialogMessages:
     An assistant turn consists of a model answer and tool calls.
     """
 
-    def __init__(self, logger_for_agent_logs: logging.Logger, use_prompt_budgeting: bool = False, ):
+    def __init__(
+        self,
+        logger_for_agent_logs: logging.Logger,
+        use_prompt_budgeting: bool = False,
+    ):
         self.logger_for_agent_logs = logger_for_agent_logs
         self._message_lists: list[list[GeneralContentBlock]] = []
         self.token_counter = ClaudeTokenCounter()
@@ -335,9 +338,9 @@ class DialogMessages:
         assert self.is_user_turn(), "Can only add user prompts on user's turn"
 
     def _assert_assistant_turn(self):
-        assert (
-            self.is_assistant_turn()
-        ), "Can only get/replace last user prompt on assistant's turn"
+        assert self.is_assistant_turn(), (
+            "Can only get/replace last user prompt on assistant's turn"
+        )
 
 
 class Tool:
@@ -454,6 +457,7 @@ def call_tools(
         dialog_messages.add_tool_call_results(calls_to_make, tool_outputs)
 
     return tool_outputs
+
 
 def generate_patch(git_repo, reverse=False):
     """Generate the patch for the prediction."""

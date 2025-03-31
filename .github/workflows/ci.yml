@@ -1,0 +1,28 @@
+name: CI - pre-commit & run tests
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.7'  # or your preferred version
+
+      - name: Install dependencies
+        run: |
+          ./setup.sh
+
+      - name: Run pre-commit
+        run: uv run pre-commit run --all-files
+
+      - name: Run pytest
+        run: uv run pytest

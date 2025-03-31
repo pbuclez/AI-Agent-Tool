@@ -16,7 +16,6 @@ from rich.console import Console
 from rich.panel import Panel
 from prompt_toolkit import prompt
 from prompt_toolkit.history import InMemoryHistory
-from termcolor import colored
 
 from tools.agent import Agent
 from utils.workspace_manager import WorkspaceManager
@@ -25,6 +24,7 @@ from prompts.instruction import INSTRUCTION_PROMPT
 
 MAX_OUTPUT_TOKENS_PER_TURN = 32768
 MAX_TURNS = 200
+
 
 def main():
     """Main entry point for the CLI."""
@@ -84,7 +84,7 @@ def main():
     if not args.minimize_stdout_logs:
         logger_for_agent_logs.addHandler(logging.StreamHandler())
     else:
-        logger_for_agent_logs.propagate = False        
+        logger_for_agent_logs.propagate = False
 
     # Check if ANTHROPIC_API_KEY is set
     if "ANTHROPIC_API_KEY" not in os.environ:
@@ -108,7 +108,9 @@ def main():
             )
         )
     else:
-        logger_for_agent_logs.info("Agent CLI started. Waiting for user input. Press Ctrl+C to exit. Type 'exit' or 'quit' to end the session.")
+        logger_for_agent_logs.info(
+            "Agent CLI started. Waiting for user input. Press Ctrl+C to exit. Type 'exit' or 'quit' to end the session."
+        )
 
     # Initialize LLM client
     client = get_client(
@@ -119,7 +121,9 @@ def main():
 
     # Initialize workspace manager
     workspace_path = Path(args.workspace).resolve()
-    workspace_manager = WorkspaceManager(root=workspace_path, container_workspace=args.use_container_workspace)
+    workspace_manager = WorkspaceManager(
+        root=workspace_path, container_workspace=args.use_container_workspace
+    )
 
     # Initialize agent
     agent = Agent(
@@ -135,8 +139,12 @@ def main():
 
     if args.problem_statement is not None:
         instruction = INSTRUCTION_PROMPT.format(
-            location=workspace_path if args.use_container_workspace is None else args.use_container_workspace,
-            pr_description=args.problem_statement
+            location=(
+                workspace_path
+                if args.use_container_workspace is None
+                else args.use_container_workspace
+            ),
+            pr_description=args.problem_statement,
         )
     else:
         instruction = None
@@ -157,7 +165,9 @@ def main():
                     break
             else:
                 user_input = instruction
-                logger_for_agent_logs.info(f"User instruction:\n{user_input}\n-------------")
+                logger_for_agent_logs.info(
+                    f"User instruction:\n{user_input}\n-------------"
+                )
 
             # Run the agent with the user input
             logger_for_agent_logs.info("\nAgent is thinking...")
@@ -167,7 +177,7 @@ def main():
             except Exception as e:
                 logger_for_agent_logs.info(f"Error: {str(e)}")
 
-            logger_for_agent_logs.info("\n" + '-' * 40 + "\n")
+            logger_for_agent_logs.info("\n" + "-" * 40 + "\n")
 
             if instruction is not None:
                 break
