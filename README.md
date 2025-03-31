@@ -120,7 +120,7 @@ You can increase `--num-examples` and `--num-candidate-solutions` to run on more
 
 ### Running on more examples.
 
-There are 500 examples total in SWE-bench Verified. Note that this can take awhile, so there are a few levels of parallelism this repository supports. 
+There are 500 examples total in SWE-bench Verified. Note that this can take awhile, so there are a few levels of parallelism this repository supports.
 - Firstly, we suggest running 8 processes. This is the `--num-processes` flag. Beyond this, Docker hits issues.
 - Secondly, we support a notion of breaking up the dataset into shards. This is the `--shard-ct` and `--shard-id` flags. This makes it relatively easy to split up the work across multiple machines, which circumnvents the issues with scaling Docker byeond 8 processes.
 

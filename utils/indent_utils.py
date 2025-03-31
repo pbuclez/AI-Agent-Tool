@@ -73,7 +73,7 @@ def detect_line_indent(line: str) -> Tuple[int, int]:
     return (num_tabs, num_spaces)
 
 
-def detect_indent_type(code: str) -> IndentType | None:
+def detect_indent_type(code: str | None) -> IndentType | None:
     """Detect the indentation type (spaces or tabs) and size used in the code.
 
     If the code contains mixed indentation, it will return MIXED.
@@ -156,7 +156,7 @@ def force_normalize_indent(code: str) -> str:
     return "\n".join(normalized_lines)
 
 
-def normalize_indent(code: str, indent_type: IndentType) -> str:
+def normalize_indent(code: str | None, indent_type: IndentType) -> str | None:
     """Normalize indentation in code to use 4 spaces.
 
     Args:
@@ -207,8 +207,10 @@ def normalize_indent(code: str, indent_type: IndentType) -> str:
 
 
 def apply_indent_type(
-    code: str, indent_type: IndentType, original_indent_type: IndentType | None = None
-) -> str:
+    code: str | None,
+    indent_type: IndentType,
+    original_indent_type: IndentType | None = None,
+) -> str | None:
     """Apply the specified indentation type to code.
 
     Args:
@@ -268,7 +270,7 @@ def apply_indent_type(
     return "\n".join(modified_lines)
 
 
-def match_indent_by_first_line(code: str, line: str) -> str:
+def match_indent_by_first_line(code: str | None, line: str) -> str | None:
     """Match the indentation of the first line in code to the given line.
     All subsequent lines will be adjusted to maintain their relative indentation.
 
@@ -307,7 +309,10 @@ def match_indent_by_first_line(code: str, line: str) -> str:
     return "\n".join(modified_lines)
 
 
-def match_indent(code: str, code_to_match: str) -> str:
+def match_indent(code: str | None, code_to_match: str) -> str | None:
+    if not code or not isinstance(code, str):
+        return code
+
     indent_type = detect_indent_type(code_to_match)
     if indent_type is not None and indent_type.is_mixed:
         indent_type = indent_type.most_used

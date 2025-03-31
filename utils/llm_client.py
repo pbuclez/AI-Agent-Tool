@@ -1,14 +1,11 @@
 """LLM client for Anthropic models."""
 
-
 import json
 import os
 import random
-import io
-import sys
 import time
 from dataclasses import dataclass
-from typing import Any, Tuple, cast, Generator
+from typing import Any, Tuple, cast
 from dataclasses_json import DataClassJsonMixin
 import anthropic
 import openai
@@ -25,7 +22,7 @@ from anthropic import (
     RateLimitError as AnthropicRateLimitError,
 )
 from anthropic._exceptions import (
-    OverloadedError as AnthropicOverloadedError,
+    OverloadedError as AnthropicOverloadedError,  # pyright: ignore[reportPrivateImportUsage]
 )
 from anthropic.types import (
     TextBlock as AnthropicTextBlock,
@@ -54,10 +51,14 @@ from openai import (
 from openai import (
     RateLimitError as OpenAI_RateLimitError,
 )
-from openai._types import NOT_GIVEN as OpenAI_NOT_GIVEN
+from openai._types import (
+    NOT_GIVEN as OpenAI_NOT_GIVEN,  # pyright: ignore[reportPrivateImportUsage]
+)
 
 import logging
+
 logging.getLogger("httpx").setLevel(logging.WARNING)
+
 
 @dataclass
 class ToolParam(DataClassJsonMixin):
@@ -116,6 +117,7 @@ UserContentBlock = TextPrompt | ToolFormattedResult
 GeneralContentBlock = UserContentBlock | AssistantContentBlock
 LLMMessages = list[list[GeneralContentBlock]]
 
+
 class LLMClient:
     """A client for LLM APIs for the use in agents."""
 
@@ -143,6 +145,7 @@ class LLMClient:
             A generated response.
         """
         raise NotImplementedError
+
 
 def recursively_remove_invoke_tag(obj):
     """Recursively remove the </invoke> tag from a dictionary or list."""
@@ -184,7 +187,7 @@ class AnthropicDirectClient(LLMClient):
         self.use_caching = use_caching
         self.prompt_caching_headers = {"anthropic-beta": "prompt-caching-2024-07-31"}
         self.thinking_tokens = thinking_tokens
-    
+
     def generate(
         self,
         messages: LLMMessages,
@@ -312,9 +315,9 @@ class AnthropicDirectClient(LLMClient):
                 "thinking": {"type": "enabled", "budget_tokens": thinking_tokens}
             }
             temperature = 1
-            assert (
-                max_tokens >= 32_000 and thinking_tokens <= 8192
-            ), f"As a heuristic, max tokens {max_tokens} must be >= 32k and thinking tokens {thinking_tokens} must be < 8k"
+            assert max_tokens >= 32_000 and thinking_tokens <= 8192, (
+                f"As a heuristic, max tokens {max_tokens} must be >= 32k and thinking tokens {thinking_tokens} must be < 8k"
+            )
         else:
             extra_body = None
 
@@ -389,6 +392,7 @@ class AnthropicDirectClient(LLMClient):
         }
 
         return augment_messages, message_metadata
+
 
 class OpenAIDirectClient(LLMClient):
     """Use OpenAI models via first party API."""

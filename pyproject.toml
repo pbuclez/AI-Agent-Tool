@@ -18,8 +18,15 @@ dependencies = [
     "numpy>=2.2.4",
     "openai==1.59.*",
     "pexpect>=4.9.0",
+    "pre-commit>=4.2.0",
     "prompt-toolkit>=3.0.50",
+    "pyright>=1.1.398",
     "pytest==7.4.3",
     "rich>=13.9.4",
     "termcolor>=2.5.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.2",
 ]

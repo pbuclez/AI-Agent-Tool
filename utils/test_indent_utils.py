@@ -214,9 +214,9 @@ class TestIndentUtils:
         # Code with tabs and spaces on same line but tabs first
         code = "def test():\n\t  print('mixed')"
         indent_type = detect_indent_type(code)
-        assert indent_type.is_mixed
+        assert indent_type.is_mixed  # pyright: ignore[reportOptionalMemberAccess]
         assert (
-            indent_type.most_used == IndentType.tab()
+            indent_type.most_used == IndentType.tab()  # pyright: ignore[reportOptionalMemberAccess]
         )  # Tab should be most used since it's the primary indent
 
         # Code with only one indented line but multiple levels
@@ -607,9 +607,9 @@ class TestIndentUtils:
             result.append(i)
 \treturn result"""
         mixed_type = detect_indent_type(mixed_code)
-        assert mixed_type.is_mixed
+        assert mixed_type.is_mixed  # pyright: ignore[reportOptionalMemberAccess]
         assert (
-            mixed_type.most_used == IndentType.tab()
+            mixed_type.most_used == IndentType.tab()  # pyright: ignore[reportOptionalMemberAccess]
         )  # More tab-indented lines (3 vs 2)
 
         # Applying new indent to mixed code should return original
@@ -706,13 +706,13 @@ class TestIndentUtils:
         mixed_space = IndentType.mixed(most_used=IndentType.space(4))
         assert mixed_space.is_mixed
         assert mixed_space.most_used == IndentType.space(4)
-        assert mixed_space.most_used.size == 4
+        assert mixed_space.most_used.size == 4  # pyright: ignore[reportOptionalMemberAccess]
 
         # Test mixed indentation with tab as most_used
         mixed_tab = IndentType.mixed(most_used=IndentType.tab())
         assert mixed_tab.is_mixed
         assert mixed_tab.most_used == IndentType.tab()
-        assert mixed_tab.most_used.size == 1
+        assert mixed_tab.most_used.size == 1  # pyright: ignore[reportOptionalMemberAccess]
 
         # Test equality
         assert IndentType.space(4) == IndentType.space(4)

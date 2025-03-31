@@ -42,6 +42,10 @@ echo "Done installing SWE-bench evaluation tools, including a separate virtual e
 # navigate to cwd
 cd ${current_dir}
 
+# Install pre-commit hooks
+echo "Installing pre-commit hooks..."
+uvx pre-commit install-hooks
+
 echo "Setup complete! Activate the virtual environment for augment-swebench-agent with:"
 echo "source .venv/bin/activate"
 

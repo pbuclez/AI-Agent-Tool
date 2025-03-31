@@ -19,6 +19,7 @@ from tools.bash_tool import (
     create_bash_tool,
 )
 
+
 def bash_tool():
     return BashTool(
         workspace_root=Path("/tmp"),
@@ -32,9 +33,7 @@ def test_successful_command():
         workspace_root=Path("/tmp"),
         require_confirmation=False,
     )
-    with patch(
-        "tools.bash_tool.run_command"
-    ) as mock_run_command:
+    with patch("tools.bash_tool.run_command") as mock_run_command:
         # Mock a successful command execution
         mock_run_command.return_value = "Command output"
 
@@ -55,9 +54,7 @@ def test_failed_command():
         workspace_root=Path("/tmp"),
         require_confirmation=False,
     )
-    with patch(
-        "tools.bash_tool.run_command"
-    ) as mock_run_command:
+    with patch("tools.bash_tool.run_command") as mock_run_command:
         # Mock a failed command execution that raises an exception
         mock_run_command.side_effect = Exception("Command failed")
 
@@ -82,9 +79,7 @@ def test_command_with_exception():
         workspace_root=Path("/tmp"),
         require_confirmation=False,
     )
-    with patch(
-        "tools.bash_tool.run_command"
-    ) as mock_run_command:
+    with patch("tools.bash_tool.run_command") as mock_run_command:
         # Mock an exception during command execution
         mock_run_command.side_effect = Exception("Test exception")
 
@@ -351,9 +346,7 @@ class BashToolTest(unittest.TestCase):
     def test_create_bash_tool(self):
         """Test the create_bash_tool factory function."""
 
-        with patch(
-            "tools.bash_tool.BashTool"
-        ) as mock_bash_tool:
+        with patch("tools.bash_tool.BashTool") as mock_bash_tool:
             _ = create_bash_tool(
                 ask_user_permission=True,
                 cwd=self.workspace_root,

@@ -1,10 +1,13 @@
 """Tool for indicating task completion."""
+
 from typing import Any, Optional
 from utils.common import (
     DialogMessages,
     LLMTool,
     ToolImplOutput,
 )
+
+
 class CompleteTool(LLMTool):
     name = "complete"
     """The model should call this tool when it is done with the task."""
