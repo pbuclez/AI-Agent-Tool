@@ -2,6 +2,7 @@ name: CI - pre-commit & run tests
 
 on:
   pull_request:
+  push:
     branches: [ main ]
 
 jobs:

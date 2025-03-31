@@ -56,7 +56,7 @@ Since Anthropic's models are currently state-of-the-art on code, we used Claude 
 - Interactive mode: Use `cli.py` to spin up an interactive agent for experimentation or as a personal coding assistant!
 - SWE-bench mode: Use `run_agent_on_swebench_problem.py` to run the agent on SWE-bench problems. This is similar to the script we used to generate our SWE-bench submission.
 
-More details both below!
+More details on both below!
 
 ## Usage (interactive mode)
 
@@ -67,7 +67,7 @@ in the current directory.
 python cli.py
 ```
 
-This will start an interactive session where you can communicate with the agent.
+This will start an interactive session where you can communicate with the agent and assign it tasks.
 
 ### Command-line Options
 
@@ -223,12 +223,20 @@ To add a new tool to the agent:
 2. Implement the required methods (run_impl, get_tool_param, etc.)
 3. Add the tool to the agent's tools list in `tools/agent.py`
 
+### Customizing the Agent Prompts
+
+The agent's prompts are defined in the `prompts/` directory. You can customize the prompts by modifying the template strings in the respective files.
+
 ### Customizing the Majority Vote Ensembler
 
 You can customize the Majority Vote Ensembler by modifying:
 
 - `prompts/ensembler_prompt.py`: Change the prompt template used for ensembling
 - Change the LLM model by modifying the `get_client` call in `process_problem` function
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
 
 ## License
 
