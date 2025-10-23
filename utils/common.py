@@ -398,9 +398,9 @@ class LLMTool:
             result = self.run_impl(tool_input, dialog_messages)
             tool_output = result.tool_output
         except jsonschema.ValidationError as exc:
-            tool_output = "Invalid tool input: " + exc.message
+            tool_output = "Invalid tool input: " + str(exc)
         except BadRequestError as exc:
-            raise RuntimeError("Bad request: " + exc.message)
+            raise RuntimeError("Bad request: " + str(exc))
 
         return tool_output
 

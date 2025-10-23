@@ -221,7 +221,7 @@ Notes for using the `str_replace` command:\n
             container_root = self.workspace_manager.container_path(
                 self.workspace_manager.root
             )
-            if not is_path_in_directory(self.workspace_manager.root, _ws_path):
+            if not is_path_in_directory(Path(self.workspace_manager.root), _ws_path):
                 return ExtendedToolImplOutput(
                     f"Path {_ws_path} is outside the workspace root directory: {container_root}. You can only access files within the workspace root directory.",
                     f"Path {_ws_path} is outside the workspace root directory: {container_root}. You can only access files within the workspace root directory.",
@@ -274,8 +274,8 @@ Notes for using the `str_replace` command:\n
             )
         except Exception as e:
             return ExtendedToolImplOutput(
-                e.message,  # pyright: ignore[reportAttributeAccessIssue]
-                e.message,  # pyright: ignore[reportAttributeAccessIssue]
+                str(e),  # pyright: ignore[reportAttributeAccessIssue]
+                str(e),  # pyright: ignore[reportAttributeAccessIssue]
                 {"success": False},
             )
 

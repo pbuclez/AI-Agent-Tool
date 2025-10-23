@@ -1,5 +1,6 @@
 from copy import deepcopy
 from typing import Any, Optional
+import asyncio
 from tools.bash_tool import create_bash_tool, create_docker_bash_tool
 from utils.common import (
     DialogMessages,
@@ -12,6 +13,8 @@ from tools.complete_tool import CompleteTool
 from prompts.system_prompt import SYSTEM_PROMPT
 from tools.str_replace_tool import StrReplaceEditorTool
 from tools.sequential_thinking_tool import SequentialThinkingTool
+from tools.web_search_tool import WebSearchTool
+from tools.bug_hunter import ParallelBugHunter, BugHunterTool
 from termcolor import colored
 from rich.console import Console
 import logging
@@ -58,6 +61,7 @@ try breaking down the task into smaller steps and call this tool multiple times.
         use_prompt_budgeting: bool = True,
         ask_user_permission: bool = False,
         docker_container_id: Optional[str] = None,
+        enable_bug_hunter: bool = True,
     ):
         """Initialize the agent.
 
@@ -107,7 +111,21 @@ try breaking down the task into smaller steps and call this tool multiple times.
             StrReplaceEditorTool(workspace_manager=workspace_manager),
             SequentialThinkingTool(),
             self.complete_tool,
+            WebSearchTool(workspace_manager=workspace_manager),
+            BugHunterTool(client=client, workspace_manager=workspace_manager),
         ]
+        
+        self.bug_hunter = None
+        self.bug_hunter_thread = None
+        if enable_bug_hunter:
+            self.bug_hunter = ParallelBugHunter(
+                client=client,
+                workspace_manager=workspace_manager,
+                logger=logger_for_agent_logs,
+                check_interval=5.0
+            )
+            
+            self.bug_hunter.on_bugs_found = self._handle_bugs_found
 
     def run_impl(
         self,
@@ -124,6 +142,23 @@ try breaking down the task into smaller steps and call this tool multiple times.
         # Add instruction to dialog before getting mode
         self.dialog.add_user_prompt(instruction)
         self.interrupted = False
+        
+        if self.bug_hunter and not self.bug_hunter.is_running:
+            try:
+                import threading
+                def start_bug_hunter():
+                    try:
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        loop.run_until_complete(self.bug_hunter.start())
+                    except Exception as e:
+                        self.logger_for_agent_logs.error(f"Bug hunter thread error: {e}")
+                
+                self.bug_hunter_thread = threading.Thread(target=start_bug_hunter, daemon=True)
+                self.bug_hunter_thread.start()
+                self.logger_for_agent_logs.info("Bug hunter started")
+            except Exception as e:
+                self.logger_for_agent_logs.error(f"Failed to start bug hunter: {e}")
 
         remaining_turns = self.max_turns
         while remaining_turns > 0:
@@ -291,3 +326,29 @@ try breaking down the task into smaller steps and call this tool multiple times.
     def clear(self):
         self.dialog.clear()
         self.interrupted = False
+        
+        # Stop bug hunter if running
+        if self.bug_hunter and self.bug_hunter.is_running:
+            try:
+                # Signal bug hunter to stop
+                self.bug_hunter.is_running = False
+                
+                # Wait for thread to finish
+                if self.bug_hunter_thread and self.bug_hunter_thread.is_alive():
+                    self.bug_hunter_thread.join(timeout=2.0)
+                
+                self.logger_for_agent_logs.info("Bug hunter stopped")
+            except Exception as e:
+                self.logger_for_agent_logs.error(f"Error stopping bug hunter: {e}")
+    
+    def _handle_bugs_found(self, file_path: str, bug_report: str):
+        """Handle when bugs are found in a file."""
+        self.logger_for_agent_logs.warning(f"Bugs found in {file_path}")
+        
+
+        bug_message = f"Bug Alert: Issues found in {file_path}\n\n{bug_report}\n\nPlease review and fix these issues."
+        
+        # Add to dialog
+        self.dialog.add_user_prompt(bug_message, allow_append_to_tool_call_results=True)
+        
+        self.logger_for_agent_logs.info("Bug alert added to agent dialog")
