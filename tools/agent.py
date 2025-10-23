@@ -348,7 +348,7 @@ try breaking down the task into smaller steps and call this tool multiple times.
 
         bug_message = f"Bug Alert: Issues found in {file_path}\n\n{bug_report}\n\nPlease review and fix these issues."
         
-        # Add to dialog
-        self.dialog.add_user_prompt(bug_message, allow_append_to_tool_call_results=True)
+        # Add to dialog - use a new turn instead of appending
+        self.dialog.add_user_prompt(bug_message)
         
         self.logger_for_agent_logs.info("Bug alert added to agent dialog")

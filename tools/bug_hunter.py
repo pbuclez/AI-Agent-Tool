@@ -159,6 +159,9 @@ class ParallelBugHunter:
         
         try:
             for root, dirs, files in os.walk(self.workspace_manager.root):
+                # Skip virtual environment directories
+                dirs[:] = [d for d in dirs if d not in ['.venv', 'venv', '__pycache__', '.git']]
+                
                 for file in files:
                     if file.endswith('.py'):
                         file_path = os.path.join(root, file)
